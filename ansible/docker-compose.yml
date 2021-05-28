@@ -1,0 +1,12 @@
+version: '3'
+services:
+  ansible:
+    build: ./
+    container_name: ansible
+    volumes:
+      - ./ansible:/root/ansible
+      - ~/.ssh:/root/.ssh:ro
+    user: "${UID_GID}"
+    restart: unless-stopped
+    env_file:
+      - app.env
