@@ -1,0 +1,38 @@
+FROM archlinux:latest
+
+RUN set -ex; \
+    \
+    buildDeps='base-devel'; \
+    pacman -Suy --noconfirm $buildDeps \
+        python \
+        python-pip \
+        gst-python \
+        gst-plugins-good \
+        gst-plugins-ugly \
+    ; \
+    \
+    python3 -m pip install \
+        --upgrade \
+        --no-cache-dir \
+        --requirement \
+    ; \
+    pacman -Rsc --noconfirm $buildDeps; \
+    # pacman -Scc --noconfirm
+
+COPY mopidy.conf /config/mopidy.conf
+
+COPY pulse-client.conf /etc/pulse/client.conf
+
+ENV HOME=/var/lib/mopidy
+
+WORKDIR $HOME
+
+USER mopidy
+
+RUN /usr/bin/mopidy --version
+
+VOLUME ["/var/lib/mopidy/local", "/var/lib/mopidy/media"]
+
+EXPOSE 6600 6680 5555/udp
+
+CMD ["/usr/bin/mopidy", "--quiet"]

@@ -1,0 +1,51 @@
+FROM woahbase/alpine-pulseaudio:x86_64
+
+FROM alpine:latest
+
+RUN set -ex; \
+    \
+    apk --no-cache --update add \
+        python3-dev \
+        py3-pip \
+        py3-gst \
+        gst-plugins-good \
+        gst-plugins-bad \
+        gst-plugins-ugly \
+    ; \
+    \
+    pip3 install --upgrade --no-cache-dir \
+        mopidy \
+        mopidy-iris \
+        mopidy-mpd \
+        mopidy-podcast-itunes \
+        mopidy-somafm \
+        mopidy-soundcloud \
+        mopidy-spotify \
+        mopidy-tunein \
+        mopidy-youtube
+
+
+COPY mopidy.conf /config/mopidy.conf
+
+COPY pulse-client.conf /etc/pulse/client.conf
+
+ENV HOME=/var/lib/mopidy
+
+WORKDIR $HOME
+
+USER mopidy
+
+ENV SOUDCLOUD_AUTH_TOKEN=${SOUDCLOUD_AUTH_TOKEN}
+
+ENV SPOTIFY_USERNAME=${SPOTIFY_USERNAME}
+ENV SPOTIFY_PASSWORD=${SPOTIFY_PASSWORD}
+ENV SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
+ENV SPOTIFY_SECRET=${SPOTIFY_SECRET}
+
+RUN /usr/bin/mopidy --version
+
+VOLUME ["/var/lib/mopidy/local", "/var/lib/mopidy/media"]
+
+EXPOSE 6600 6680 5555/udp
+
+CMD ["/usr/bin/mopidy", "--quiet"]

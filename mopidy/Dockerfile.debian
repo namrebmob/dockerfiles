@@ -1,0 +1,48 @@
+FROM python:slim-buster
+
+RUN buildDeps='build-essential libspotify-dev python3-dev python3-pip' \
+    && apt-get update && apt-get install -y --no-install-recommends $buildDeps \
+        curl \
+        python3-gst-1.0 \
+        gir1.2-gstreamer-1.0 \
+        gir1.2-gst-plugins-base-1.0 \
+        gstreamer1.0-plugins-good \
+        gstreamer1.0-plugins-bad \
+        gstreamer1.0-plugins-ugly \
+        gstreamer1.0-tools \
+    && rm -rf /var/lib/apt/lists/* \
+    && python3 -m pip install --upgrade --no-cache-dir \
+        pyspotify \
+        # \
+        mopidy \
+        mopidy-autoplay \
+        mopidy-iris \
+        mopidy-mpd \
+        mopidy-pandora \
+        mopidy-podcast \
+        mopidy-podcast-itunes \
+        mopidy-radionet \
+        mopidy-somafm \
+        mopidy-soundcloud \
+        mopidy-spotify \
+        mopidy-tunein \
+        mopidy-youtube \
+    && apt-get purge -y --auto-remove $buildDeps
+
+COPY mopidy.conf /config/mopidy.conf
+
+COPY pulse-client.conf /etc/pulse/client.conf
+
+ENV HOME=/var/lib/mopidy
+
+WORKDIR $HOME
+
+USER mopidy
+
+RUN /usr/bin/mopidy --version
+
+VOLUME ["/var/lib/mopidy/local", "/var/lib/mopidy/media"]
+
+EXPOSE 6600 6680 5555/udp
+
+CMD ["/usr/bin/mopidy", "--quiet"]
