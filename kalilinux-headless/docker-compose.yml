@@ -1,0 +1,9 @@
+version: '3'
+services:
+  kalilinux-headless:
+    build: ./
+    container_name: kalilinux-headless
+    volumes:
+      - ./kali:/root
+      - /var/lib/postgresql/data
+    restart: unless-stopped
