@@ -1,0 +1,8 @@
+version: '3'
+services:
+  blackarch:
+    build: ./
+    container_name: blackarch
+    volumes:
+      - ./blackarch:/root
+    restart: unless-stopped
