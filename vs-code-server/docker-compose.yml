@@ -1,0 +1,14 @@
+version: '3'
+services:
+  code-server:
+    image: ghcr.io/linuxserver/code-server
+    container_name: code-server
+    environment:
+      - PUID=60014
+      - PGID=60014
+      - DOCKER_MODS=linuxserver/mods:code-server-python3|linuxserver/mods:code-server-scikit-learn
+    volumes:
+      - ./config:/config
+    ports:
+      - 8443:8443
+    restart: unless-stopped
